@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import open3d as o3d
 import os
 import sys
 import glob
@@ -272,7 +271,7 @@ if __name__ == '__main__':
         num_points=1024,
         random_rotation=True,
         rotation_range=360,
-        voxel_size=0.05,
+        voxel_size=0.025,
         manual_seed=False)
 
     for data in train:

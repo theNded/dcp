@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 from __future__ import print_function
 import os
 import gc
@@ -11,7 +10,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import MultiStepLR
-from data import ModelNet40
+from data import ModelNet40, ThreeDMatchPairDataset03
 from model import DCP
 from util import transform_point_cloud, npmat2euler
 import numpy as np
@@ -564,12 +563,17 @@ def main():
                         help='Wheter to test on unseen category')
     parser.add_argument('--num_points', type=int, default=1024, metavar='N',
                         help='Num of points to use')
-    parser.add_argument('--dataset', type=str, default='modelnet40', choices=['modelnet40'], metavar='N',
+    parser.add_argument('--dataset', type=str, default='modelnet40', choices=['modelnet40', '3dmatch'], metavar='N',
                         help='dataset to use')
     parser.add_argument('--factor', type=float, default=4, metavar='N',
                         help='Divided factor for rotations')
     parser.add_argument('--model_path', type=str, default='', metavar='N',
                         help='Pretrained model path')
+
+    # additional
+    parser.add_argument('--dataset_path', type=str, default='')
+    parser.add_argument('--voxel_size', type=float, default=0.025)
+    parser.add_argument('--rotation_range', type=float, default=360.0)
 
     args = parser.parse_args()
     torch.backends.cudnn.deterministic = True
@@ -592,8 +596,17 @@ def main():
             ModelNet40(num_points=args.num_points, partition='test', gaussian_noise=args.gaussian_noise,
                        unseen=args.unseen, factor=args.factor),
             batch_size=args.test_batch_size, shuffle=False, drop_last=False)
-    else:
-        raise Exception("not implemented")
+    elif args.dataset == '3dmatch':
+        train_loader = DataLoader(
+            ThreeDMatchPairDataset03(dataset_path=args.dataset_path, phase='train',
+                                     num_points=args.num_points, voxel_size=args.voxel_size,
+                                     rotation_range=args.rotation_range),
+            batch_size=args.batch_size, shuffle=True, drop_last=True)
+        test_loader = DataLoader(
+            ThreeDMatchPairDataset03(dataset_path=args.dataset_path, phase='val',
+                                     num_points=args.num_points, voxel_size=args.voxel_size,
+                                     rotation_range=args.rotation_range),
+            batch_size=args.test_batch_size, shuffle=False, drop_last=False)
 
     if args.model == 'dcp':
         net = DCP(args).cuda()
