@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import open3d as o3d
 import os
 import sys
 import glob
@@ -264,15 +265,16 @@ class ThreeDMatchPairDataset07(ThreeDMatchPairDataset03):
 
 
 if __name__ == '__main__':
-    # train = ModelNet40(1024)
     train = ThreeDMatchPairDataset03(
         '/home/wei/Workspace/data/fcgf/threedmatch',
-        phase='train',
+        phase='val',
         num_points=1024,
         random_rotation=True,
         rotation_range=360,
-        voxel_size=0.025,
+        voxel_size=0.05,
         manual_seed=False)
+
+    # train = ModelNet40(1024)
 
     for data in train:
         pcd0 = o3d.geometry.PointCloud()

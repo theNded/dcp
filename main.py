@@ -611,16 +611,17 @@ def main():
 
     if args.model == 'dcp':
         net = DCP(args).cuda()
-        if args.eval:
-            if args.model_path is '':
-                model_path = 'checkpoints' + '/' + args.exp_name + '/models/model.best.t7'
-            else:
-                model_path = args.model_path
-                print(model_path)
-            if not os.path.exists(model_path):
-                print("can't find pretrained model")
-                return
-            net.load_state_dict(torch.load(model_path), strict=False)
+
+        if args.model_path is '':
+            model_path = 'checkpoints' + '/' + args.exp_name + '/models/model.best.t7'
+        else:
+            model_path = args.model_path
+            print(model_path)
+        if not os.path.exists(model_path):
+            print("can't find pretrained model")
+            return
+        net.load_state_dict(torch.load(model_path), strict=False)
+
         if torch.cuda.device_count() > 1:
             net = nn.DataParallel(net)
             print("Let's use", torch.cuda.device_count(), "GPUs!")
