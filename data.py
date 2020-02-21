@@ -85,6 +85,7 @@ class ModelNet40(Dataset):
                 self.label = self.label[self.label < 20]
 
     def __getitem__(self, item):
+        print(self.num_points)
         pointcloud = self.data[item][:self.num_points]
         if self.gaussian_noise:
             pointcloud = jitter_pointcloud(pointcloud)
