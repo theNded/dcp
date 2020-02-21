@@ -13,7 +13,7 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import MultiStepLR
 from data import ModelNet40
 from model import DCP
-from util import transform_point_cloud, npmat2euler
+from util_dcp import transform_point_cloud, npmat2euler
 import numpy as np
 from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
@@ -80,6 +80,7 @@ def test_one_epoch(args, net, test_loader):
 
         batch_size = src.size(0)
         num_examples += batch_size
+        print(src.size())
         rotation_ab_pred, translation_ab_pred, rotation_ba_pred, translation_ba_pred = net(src, target)
 
         ## save rotation and translation
